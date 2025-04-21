@@ -33,18 +33,13 @@ https://tools.196000.xyz/jsq
     ```shell
     docker run -d --name=jsq --rm -p=8088:80 hahabye/vps_jsq:latest
     ```
-- 使用 docker-compose 部署
-    ```shell
-    # 下载 docker-compose.yml 到本地
-    wget https://raw.githubusercontent.com/hahabye/vps_jsq/main/docker-compose.yml
-    # 启动服务
-    docker-compose -f docker-compose.yml up -d
-    ```
+- 下载最新版本，无外部依赖单文件自行部署
 
 ## 📢其它讨论
 
 - [剩余价值计算器源由](https://www.nodeseek.com/post-172415-1)
 - [计算结果 SVG 图片分享，速度更快、体验更佳、流量更省](https://www.nodeseek.com/post-291879-1)
+- [cloudflare pages 免域名免空间 0 成本部署 vps 剩余价值计算器](https://www.nodeseek.com/post-319981-1)
 
 ## 📧我要反馈
 
