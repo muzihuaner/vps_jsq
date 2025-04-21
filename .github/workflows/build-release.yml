@@ -45,11 +45,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           # tar
-          echo "$(date +'%Y-%m-%dT%H:%M:%S%z')" > version.txt
+          echo "$(date +'%Y-%m-%dT%H:%M:%S%z')" > dist/version.txt
           cd dist && tar -czvf ../vps_jsq.tar.gz * && cd ..
           cp vps_jsq.tar.gz dist/
-          # release files
-          rm dist/index.html
+          # release files          
           echo "/////////////////// dist  list ///////////////////"
           ls -Alh dist
 
@@ -57,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ matrix.os }}
-          path: dist/
+          path: dist/vps_jsq.tar.gz
           retention-days: 1
 
   release:
@@ -80,7 +79,7 @@ jobs:
         run: |
           mkdir -p release
           cp -f artifacts/binaries-ubuntu-latest/* release/ || true
-          cd release          
+          cd release
           echo "文件发布列表:"
           ls -la
 
