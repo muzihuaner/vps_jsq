@@ -46,7 +46,6 @@ https://tools.196000.xyz/jsq
 - [剩余价值计算器源由](https://www.nodeseek.com/post-172415-1)
 - [计算结果 SVG 图片分享，速度更快、体验更佳、流量更省](https://www.nodeseek.com/post-291879-1)
 
-
 ## 📧我要反馈
 
 [hello@196000.xyz](mailto:hello@196000.xyz)
