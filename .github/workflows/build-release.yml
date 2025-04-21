@@ -1,0 +1,98 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ 'v*.*.*' ]
+    paths:
+      - 'dist/**'
+      - '.github/workflows/build-release.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js env
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Initialize Vite project
+        run: |
+          rm -rf vite-app
+          npm create vite@latest vite-app -- --template vanilla
+          cp vite-app/package.json .
+          npm install vite --save-dev
+
+      - name: Install dependencies
+        run: |
+          npm install
+          ls -la
+          cat package.json
+
+      - name: Build for Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd dist && tar -czvf ../vps_jsq.tar.gz * && cd ..
+          cp vps_jsq.tar.gz dist/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.os }}
+          path: dist/
+          retention-days: 1
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release files
+        run: |
+          mkdir -p release
+          cp -f artifacts/binaries-ubuntu-latest/* release/ || true
+          cd release          
+          echo "$(date +'%Y-%m-%dT%H:%M:%S%z')" > version.txt
+          echo "文件列表:"
+          ls -la
+
+      - name: Delete existing latest tag
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git push origin :refs/tags/latest || true
+
+      - name: Create Latest Release
+        uses: softprops/action-gh-release@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          files: release/*
+          name: "Latest Build"
+          tag_name: "latest"          
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generate_release_notes: true
