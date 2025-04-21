@@ -27,14 +27,13 @@ https://tools.196000.xyz/jsq
 
 ![VPS 剩余价值计算器](docs/screenshots/jsq.png)
 
-## 📝使用指南
+## 📝部署使用
 
 - 使用 docker 一键部署（推荐）
     ```shell
-    docker run -d --name=jsq --rm -p=8088:80 -v=.:/app hahabye/vps_jsq:latest
+    docker run -d --name=jsq --rm -p=8088:80 hahabye/vps_jsq:latest
     ```
 - 使用 docker-compose 部署
-
     ```shell
     # 下载 docker-compose.yml 到本地
     wget https://raw.githubusercontent.com/hahabye/vps_jsq/main/docker-compose.yml
