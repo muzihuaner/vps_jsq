@@ -1,8 +1,5 @@
 (function () {
   "use strict";
-  const HOST = "https://www.196000.xyz",
-        URL_JSQ = HOST + "/api/vps/jsq",
-        URL_RATES = HOST + "/api/vps/rates";
   function h(e) {
     return new Promise(t => setTimeout(t, e))
   }
