@@ -30,7 +30,6 @@ jobs:
 
       - name: Initialize Vite project
         run: |
-          rm -rf vite-app
           npm create vite@latest vite-app -- --template vanilla
           cp vite-app/package.json .
           npm install vite --save-dev
@@ -72,6 +71,8 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
+          # binaries-${{ matrix.os }}
+          name: binaries-ubuntu-latest
           path: artifacts
 
       - name: Prepare release files
@@ -85,7 +86,14 @@ jobs:
       - name: Delete existing latest tag
         if: github.ref == 'refs/heads/main'
         run: |
-          git push origin :refs/tags/latest || true
+          git fetch --tags
+          if git rev-parse --verify refs/tags/latest >/dev/null 2>&1; then
+            echo "Deleting existing latest tag..."
+            git tag -d latest
+            git push origin :refs/tags/latest
+          else
+            echo "No existing latest tag."
+          fi
 
       - name: Create Latest Release
         uses: softprops/action-gh-release@v1
@@ -95,6 +103,6 @@ jobs:
           name: "Latest Build"
           tag_name: "latest"          
           draft: false
-          prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false          
           generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
