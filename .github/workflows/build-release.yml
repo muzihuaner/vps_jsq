@@ -13,6 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # os: [ubuntu-latest, macos-latest]
         os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
@@ -77,11 +78,13 @@ jobs:
 
       - name: Prepare release files
         run: |
+          ls -al
+          ls artifacts -al
           mkdir -p release
           cp -f artifacts/binaries-ubuntu-latest/* release/ || true
           cd release
           echo "文件发布列表:"
-          ls -la
+          ls -al
 
       - name: Delete existing latest tag
         if: github.ref == 'refs/heads/main'
