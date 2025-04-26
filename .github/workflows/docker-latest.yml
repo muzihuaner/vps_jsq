@@ -12,7 +12,6 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   REPO_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
 
-
 jobs:
   push_to_registry:
     name: Push Docker image to registries
@@ -58,7 +57,7 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.GHCR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REPO_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REPO_USERNAME }}/${{ github.event.repository.name }}:latest
           build-args: |
             GIT_COMMIT=${{ github.sha }}
             GIT_TAG=${{ github.ref_name }}
@@ -69,7 +68,7 @@ jobs:
           echo -e "=== Build Finished ===\n\
           Usage:\n\
           docker pull ${{ env.GHCR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest\n\
-          docker pull ${{ env.REPO_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
+          docker pull ${{ env.REPO_USERNAME }}/${{ github.event.repository.name }}:latest"
 
       #- name: send Message To me
       #  run: |
