@@ -81,7 +81,7 @@ jobs:
           ls -al
           ls artifacts -al
           mkdir -p release
-          cp -f artifacts/binaries-ubuntu-latest/* release/ || true
+          cp -f artifacts/artifacts/* release/ || true
           cd release
           echo "文件发布列表:"
           ls -al
