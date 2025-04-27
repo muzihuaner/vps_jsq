@@ -4,8 +4,8 @@ on:
   push:
     branches: [ "main" ]
     #tags: [ 'v*.*.*' ]
-    paths:
-      - 'dist/**'
+    #paths:
+    #  - 'dist/**'
   workflow_dispatch:
 
 jobs:
@@ -44,18 +44,21 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           # tar
-          echo "$(date +'%Y-%m-%dT%H:%M:%S%z')" > dist/version.txt
+          echo "$(date +'%Y-%m-%dT%H:%M:%S%z')" > dist/build.txt
           cd dist && tar -czvf ../vps_jsq.tar.gz * && cd ..
           cp vps_jsq.tar.gz dist/
           # release files          
           echo "/////////////////// dist  list ///////////////////"
           ls -Alh dist
 
+      # https://github.com/actions/upload-artifact
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ matrix.os }}
-          path: dist/vps_jsq.tar.gz
+          path: |
+            dist/vps_jsq.tar.gz
+            dist/build.txt
           retention-days: 1
 
   release:
@@ -83,7 +86,7 @@ jobs:
           mkdir -p release
           cp -f artifacts/* release/ || true
           cd release
-          echo "文件发布列表:"
+          echo "文件列表(release):"
           ls -al
 
       - name: Delete existing latest tag
@@ -98,14 +101,20 @@ jobs:
             echo "No existing latest tag."
           fi
 
+      # https://github.com/softprops/action-gh-release
+      # 由 main 分支触发的 Action，{{ github.ref_name }} 的值是 refs/heads/main
+      # tag_name: ${{ github.ref_name }}
       - name: Create Latest Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
+          tag_name: "latest"
+          name: "Release latest"
           files: release/*
-          name: "Latest Build"
-          tag_name: "latest"          
           draft: false
           prerelease: false          
           generate_release_notes: true
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log build completion
+        run: echo "Build and release completed at $(date -u)"
